@@ -136,7 +136,7 @@ void kitapEkle(){
        
     }
 
-
+    menu();
 }
 
 void kitapAra(){
