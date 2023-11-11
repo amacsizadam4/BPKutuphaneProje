@@ -144,7 +144,7 @@ void kitapAra(){
 }
 
 void kitapHepsi(){
-    
+    printf("Testing \n");
 }
 
 void kitapSil(){
