@@ -4,14 +4,11 @@
 #include <stdlib.h>
 
 // BUTON PROTOTİPLERİ
-//kitap ekleme fonksiyonları
-void kitapEkle(); // kitap ekleme butonu ana fonksiyonu
-void clearInputBuffer(); // kullanıcı girdisi aldıktan sonra girdi temizleme
+
+
 //bütün kitaplar fonksiyonları
+void kitapEkle(); // kitap ekleme butonu ana fonksiyonu
 void kitapHepsi();
-
-
-//henüz tamamlanmadı
 void kitapAra();
 void kitapSil();
 
@@ -22,7 +19,7 @@ void kitapSil();
 void menu(); // en başa dönmek istiyorsanız menu fonksiyonunu çağırmanız yeterli
 void gecersizSecim(); // geçersiz seçim yapıldığında ana menüye atar
 void islemTamamlandi(); //işlem tamamlandıktan sonra ana menüye dönmeden önce uyarır
-
+void clearInputBuffer(); // kullanıcı girdisi aldıktan sonra girdi temizleme
 
 int main (void){
     // karakter seçimini UTF-8 Türkçe yapar
@@ -147,6 +144,7 @@ void kitapEkle()
 
 void kitapAra()
 {
+    printf("--------------------------------------\n");
     const char *fileName = "veri.txt";
 
     FILE *file = fopen(fileName, "r");
@@ -156,7 +154,7 @@ void kitapAra()
         int numPages;
         char search[100];
 
-        printf("Enter the search string: ");
+        printf("Aradığınız bilgiyi girin: ");
         fgets(search, sizeof(search), stdin);
         search[strcspn(search, "\n")] = '\0'; // \n karakterini siler.
 
@@ -167,7 +165,7 @@ void kitapAra()
             // Check if the search string is found in any field
             if (strstr(bookName, search) != NULL || strstr(authorName, search) != NULL ||
                 strstr(bookType, search) != NULL || numPages == atoi(search)) {
-                printf("Line %d: Book: %s, Author: %s, Type: %s, Pages: %d\n", lineCount, bookName, authorName, bookType, numPages);
+                printf("Kitap Kodu: %d -- Kitap: %s, Yazar: %s, Türü: %s, Sayfa Sayısı: %d\n", lineCount, bookName, authorName, bookType, numPages);
                 found = 1;
             }
 
@@ -188,9 +186,8 @@ void kitapAra()
 
 void kitapHepsi()
 {
-    printf("Testing \n");
 
-    printf("-----------------------------\n");
+    printf("--------------------------------------\n");
 
      FILE *file = fopen("veri.txt", "r");
 
@@ -217,14 +214,21 @@ void kitapHepsi()
 
 void kitapSil()
 {
+    printf("--------------------------------------\n");
     const char *fileName = "veri.txt";
-    int lineToDelete = 2; // Example: delete the second line
+    int lineToDelete;
+    printf("Silmek istediğinz kitabın kodunu girin: \n");
+    scanf("%d",&lineToDelete);
+
+
+   
+    
 
     FILE *oldFile = fopen(fileName, "r");
     FILE *newFile = fopen("temp.txt", "w");
 
     if (oldFile == NULL || newFile == NULL) {
-        printf("Error opening files.\n");
+        printf("HATA! Dosya açılamadı.\n");
         return 1;
     }
 
@@ -246,7 +250,7 @@ void kitapSil()
     remove(fileName);
     rename("temp.txt", fileName);
 
-    printf("Line %d deleted.\n", lineToDelete);
+    printf("Kodu %d olan kitap silindi.\n", lineToDelete);
     islemTamamlandi();
     
 }
@@ -269,10 +273,10 @@ void clearInputBuffer()
 
 void islemTamamlandi()
  {
-    printf("--------------------------------------");
+    printf("--------------------------------------\n");
     printf("İşlem Tamamlandı\n");
     printf("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
-    printf("--------------------------------------");
+    printf("--------------------------------------\n");
     getchar();
 
     menu();
