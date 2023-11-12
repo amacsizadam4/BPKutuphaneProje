@@ -269,10 +269,10 @@ void clearInputBuffer()
 
 void islemTamamlandi()
  {
-    print("--------------------------------------");
-    print("İşlem Tamamlandı\n");
-    print("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
-    print("--------------------------------------");
+    printf("--------------------------------------");
+    printf("İşlem Tamamlandı\n");
+    printf("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
+    printf("--------------------------------------");
     getchar();
 
     menu();
