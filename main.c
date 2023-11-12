@@ -7,11 +7,12 @@
 //kitap ekleme fonksiyonları
 void kitapEkle(); // kitap ekleme butonu ana fonksiyonu
 void clearInputBuffer(); // kullanıcı girdisi aldıktan sonra girdi temizleme
+//bütün kitaplar fonksiyonları
+void kitapHepsi();
 
 
 //henüz tamamlanmadı
 void kitapAra();
-void kitapHepsi();
 void kitapSil();
 
 
@@ -20,6 +21,7 @@ void kitapSil();
 // ana fonksiyon prototipleri
 void menu(); // en başa dönmek istiyorsanız menu fonksiyonunu çağırmanız yeterli
 void gecersizSecim(); // geçersiz seçim yapıldığında ana menüye atar
+void islemTamamlandi(); //işlem tamamlandıktan sonra ana menüye dönmeden önce uyarır
 
 
 int main (void){
@@ -65,12 +67,15 @@ void menu(){
                 kitapEkle();
                 break;
             case 2:
+                clearInputBuffer();
                 kitapAra();
                 break;
             case 3:
+                clearInputBuffer();
                 kitapHepsi();
                 break;
             case 4:
+                clearInputBuffer();
                 kitapSil();
                 break;
             case 5:
@@ -86,7 +91,8 @@ void menu(){
 
 
 
-void kitapEkle(){
+void kitapEkle()
+{
     char kitap1[50]; // Kitap ismi
     char kitap2[50]; // Kitap yazarı
     char kitap3[30]; // Kitap türü
@@ -136,18 +142,112 @@ void kitapEkle(){
        
     }
 
-    menu();
+    islemTamamlandi();
 }
 
-void kitapAra(){
+void kitapAra()
+{
+    const char *fileName = "veri.txt";
 
+    FILE *file = fopen(fileName, "r");
+
+    if (file != NULL) {
+        char bookName[100], authorName[100], bookType[50];
+        int numPages;
+        char search[100];
+
+        printf("Enter the search string: ");
+        fgets(search, sizeof(search), stdin);
+        search[strcspn(search, "\n")] = '\0'; // \n karakterini siler.
+
+        int lineCount = 1;
+        int found = 0;
+
+        while (fscanf(file, "%99[^,],%99[^,],%49[^,],%d\n", bookName, authorName, bookType, &numPages) == 4) {
+            // Check if the search string is found in any field
+            if (strstr(bookName, search) != NULL || strstr(authorName, search) != NULL ||
+                strstr(bookType, search) != NULL || numPages == atoi(search)) {
+                printf("Line %d: Book: %s, Author: %s, Type: %s, Pages: %d\n", lineCount, bookName, authorName, bookType, numPages);
+                found = 1;
+            }
+
+            lineCount++;
+        }
+
+        if (!found) {
+            printf("Böyle bir kayıt bulunamadı.\n");
+        }
+
+        fclose(file);
+    } else {
+        printf("HATA! Dosya açılamadı.\n");
+    }
+
+    islemTamamlandi();
 }
 
-void kitapHepsi(){
+void kitapHepsi()
+{
     printf("Testing \n");
+
+    printf("-----------------------------\n");
+
+     FILE *file = fopen("veri.txt", "r");
+
+    if (file != NULL) {
+        int line = 1; // sıra sayısı / kodu
+        char bookName[100], authorName[100], bookType[50];
+        int numPages;
+
+        // dosyanın sonuna kadar okur
+        while (fscanf(file, "%99[^,],%99[^,],%49[^,],%d\n", bookName, authorName, bookType, &numPages) == 4) {
+            // okunan verileri değerlere ata
+            printf("Kitap Kodu: %d -- Kitap: %s, Yazar:%s, Türü:%s, Sayfa Sayısı: %d\n", line, bookName, authorName, bookType, numPages);
+
+            line++;
+        }
+
+        fclose(file);
+    } else {
+        printf("Error opening the file.\n");
+    }
+
+    islemTamamlandi();
 }
 
-void kitapSil(){
+void kitapSil()
+{
+    const char *fileName = "veri.txt";
+    int lineToDelete = 2; // Example: delete the second line
+
+    FILE *oldFile = fopen(fileName, "r");
+    FILE *newFile = fopen("temp.txt", "w");
+
+    if (oldFile == NULL || newFile == NULL) {
+        printf("Error opening files.\n");
+        return 1;
+    }
+
+    char buffer[1000];
+    int currentLine = 1;
+
+    // Copy lines from old file to new file, excluding the line to delete
+    while (fgets(buffer, sizeof(buffer), oldFile) != NULL) {
+        if (currentLine != lineToDelete) {
+            fputs(buffer, newFile);
+        }
+        currentLine++;
+    }
+
+    fclose(oldFile);
+    fclose(newFile);
+
+    // Replace the old file with the new one
+    remove(fileName);
+    rename("temp.txt", fileName);
+
+    printf("Line %d deleted.\n", lineToDelete);
+    islemTamamlandi();
     
 }
 
@@ -160,9 +260,20 @@ void gecersizSecim()
     menu();
 }
 
-
-void clearInputBuffer() {
+void clearInputBuffer()
+ {
     int c;
     while ((c = getchar()) != '\n' && c != EOF) {
     }
 }
+
+void islemTamamlandi()
+ {
+    print("--------------------------------------");
+    print("İşlem Tamamlandı\n");
+    print("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
+    print("--------------------------------------");
+    getchar();
+
+    menu();
+ }
