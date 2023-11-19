@@ -13,3 +13,9 @@ _değişken isimleri Türkçe'ye çevrilecek.
 +tamamlandı
 6-Bilgilendirme sayfası
 _
+
+
+
+
+veri.txt dosyası uygulamanın çalışması için önemli, uygulama dosyayı kendisi oluşturamıyor.
+Gerekirse uygulama başladığında veri.txt kontrol fonksiyonu eklenilebilir. (Yok ise oluştur var ise elleme)
