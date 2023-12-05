@@ -2,11 +2,19 @@
 #include <locale.h> //Türkçe karakterler için kütüphane
 #include <string.h>
 #include <stdlib.h>
+#include <conio.h>
+#include <time.h>
 
 // BUTON PROTOTİPLERİ
 
+//yapım aşamasındaki fonksiyonlar
+void anaMenu();
+void kullaniciMenu();
+void yoneticiMenu();
+void rastgeleCizim();
 
-//bütün kitaplar fonksiyonları
+
+//bütün kitap fonksiyonları
 void kitapEkle(); // kitap ekleme butonu ana fonksiyonu
 void kitapHepsi();
 void kitapAra();
@@ -14,32 +22,33 @@ void kitapSil();
 
 
 
-
 // ana fonksiyon prototipleri
-void menu(); // en başa dönmek istiyorsanız menu fonksiyonunu çağırmanız yeterli
+void menu(); // en başa dönmek istiyorsanız menu fonksiyonunu çağırmanız yeterli.
 void gecersizSecim(); // geçersiz seçim yapıldığında ana menüye atar
-void islemTamamlandi(); //işlem tamamlandıktan sonra ana menüye dönmeden önce uyarır
+void islemTamamlandi(); //işlem tamamlandıktan sonra ana menüye dönmeden önce uyarır.
 void clearInputBuffer(); // kullanıcı girdisi aldıktan sonra girdi temizleme
 
-int main (void){
+
+
+int main (){
     // karakter seçimini UTF-8 Türkçe yapar
-    setlocale(LC_ALL, "tr_TR.UTF-8");
+    setlocale(LC_ALL, "tr_TR.UTF-8"); //BU ÇALIŞIYOR!
     //setlocale(LC_ALL, "Turkish");
+    //setlocale(LC_ALL, "tr_TR");
+
     //hoşgeldiniz bölümü (bir kez çalışır)
+    printf("═════════════════HOŞGELDİNİZ═════════════════\n");
 
+    rastgeleCizim();
 
-    printf("test test test test test test test test test31\n");
-    printf("-----------------HOŞGELDİNİZ-----------------\n");
-
-    
-
+    printf("═════════════════════════════════════════════\n");
 
     menu(); // Ana Menü fonksiyonunu çağırır
 
     }
 
 
-//fonksiyonlar    
+//     -----------------  fonksiyonlar  -----------------    
 
 void menu(){
 
@@ -147,7 +156,7 @@ void kitapAra()
     printf("--------------------------------------\n");
     const char *fileName = "veri.txt";
 
-    FILE *file = fopen(fileName, "r");
+    FILE *file = fopen(fileName, "r");  //r , w , a
 
     if (file != NULL) {
         char bookName[100], authorName[100], bookType[50];
@@ -161,7 +170,7 @@ void kitapAra()
         int lineCount = 1;
         int found = 0;
 
-        while (fscanf(file, "%99[^,],%99[^,],%49[^,],%d\n", bookName, authorName, bookType, &numPages) == 4) {
+        while (fscanf(file, "%9z9[^,],%99[^,],%49[^,],%d\n", bookName, authorName, bookType, &numPages) == 4) {
             // Check if the search string is found in any field
             if (strstr(bookName, search) != NULL || strstr(authorName, search) != NULL ||
                 strstr(bookType, search) != NULL || numPages == atoi(search)) {
@@ -280,4 +289,30 @@ void islemTamamlandi()
     getchar();
 
     menu();
+ }
+
+ void rastgeleCizim() 
+ {
+    srand(time(NULL));
+    int num = rand() % 4 + 1;
+    char snum[5];
+
+    char filename[30];
+
+    itoa(num, snum, 5); // rastgele int sayısı stringe çevrilir.
+
+    printf("debug - random number is %d\n", num);
+    //const char *filename = ("../art/%s.txt", snum);
+    sprintf(filename, "../art/%d.txt", num);
+    
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+    printf("Dosya açılamadı, ana menüye dönülüyor: %s\n", filename);
+    menu();
+}
+    char line[1024]; // buffer
+    while (fgets(line, sizeof(line), fp) != NULL) {
+    printf("%s", line); // okunan sırayı yazdır
+}
+    fclose(fp);
  }
