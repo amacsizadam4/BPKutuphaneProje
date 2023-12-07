@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <time.h>
+#include <unistd.h> // SLEEP
 
 // BUTON PROTOTİPLERİ
 
@@ -12,6 +13,7 @@ void anaMenu();
 void kullaniciMenu();
 void yoneticiMenu();
 void rastgeleCizim();
+void rastgeleSoz();
 
 
 //bütün kitap fonksiyonları
@@ -27,7 +29,6 @@ void menu(); // en başa dönmek istiyorsanız menu fonksiyonunu çağırmanız 
 void gecersizSecim(); // geçersiz seçim yapıldığında ana menüye atar
 void islemTamamlandi(); //işlem tamamlandıktan sonra ana menüye dönmeden önce uyarır.
 void clearInputBuffer(); // kullanıcı girdisi aldıktan sonra girdi temizleme
-
 
 
 int main (){
@@ -86,7 +87,7 @@ void menu(){
                 break;
             case 5:
                 printf("Sistem kapatılıyor. İyi günler!\n");
-                return 0;
+                exit(1);
             default:
                 gecersizSecim();
 
@@ -103,7 +104,7 @@ void kitapEkle()
     char kitap2[50]; // Kitap yazarı
     char kitap3[30]; // Kitap türü
     int kitap4; // Sayfa sayısı
-    printf("--------------------------");
+    printf("═════════════════════════════════════════════\n");
     printf("Seçilen: Kitap Ekle \n");
 
 
@@ -153,7 +154,8 @@ void kitapEkle()
 
 void kitapAra()
 {
-    printf("--------------------------------------\n");
+    printf("═════════════════════════════════════════════\n");
+    printf("Seçilen: Kitap Ara\n");
     const char *fileName = "veri.txt";
 
     FILE *file = fopen(fileName, "r");  //r , w , a
@@ -196,7 +198,8 @@ void kitapAra()
 void kitapHepsi()
 {
 
-    printf("--------------------------------------\n");
+    printf("═════════════════════════════════════════════\n");
+    printf("Seçilen: Tüm Kitapları Göster\n");
 
      FILE *file = fopen("veri.txt", "r");
 
@@ -223,7 +226,8 @@ void kitapHepsi()
 
 void kitapSil()
 {
-    printf("--------------------------------------\n");
+    printf("═════════════════════════════════════════════\n");
+    printf("Seçilen: Kitap Sil\n");
     const char *fileName = "veri.txt";
     int lineToDelete;
     printf("Silmek istediğinz kitabın kodunu girin: \n");
@@ -238,7 +242,7 @@ void kitapSil()
 
     if (oldFile == NULL || newFile == NULL) {
         printf("HATA! Dosya açılamadı.\n");
-        return 1;
+        exit(1);
     }
 
     char buffer[1000];
@@ -266,10 +270,11 @@ void kitapSil()
 
 void gecersizSecim() 
 {
-    printf("----------------------------\n");
-    printf("GEÇERSİZ SEÇİM, ana menüye dönülüyor\n");
-    printf("----------------------------\n");
-
+    printf("═════════════════════════════════════════════\n");
+    printf("GEÇERSİZ SEÇİM, iki saniye içinde ana menüye dönülüyor\n");
+    printf("═════════════════════════════════════════════\n");
+    sleep(2000);
+    printf("\e[1;1H\e[2J"); //CLEAR SCREEN
     menu();
 }
 
@@ -282,19 +287,19 @@ void clearInputBuffer()
 
 void islemTamamlandi()
  {
-    printf("--------------------------------------\n");
+    printf("═════════════════════════════════════════════\n");
     printf("İşlem Tamamlandı\n");
     printf("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
-    printf("--------------------------------------\n");
-    getchar();
-
+    printf("═════════════════════════════════════════════\n");
+    getchar(); // herhangi bir girdi al
+    printf("\e[1;1H\e[2J"); // CLEAR SCREEN
     menu();
  }
 
  void rastgeleCizim() 
  {
     srand(time(NULL));
-    int num = rand() % 4 + 1;
+    int num = rand() % 5 + 1;
     char snum[5];
 
     char filename[30];
@@ -303,7 +308,7 @@ void islemTamamlandi()
 
     printf("debug - random number is %d\n", num);
     //const char *filename = ("../art/%s.txt", snum);
-    sprintf(filename, "../art/%d.txt", num);
+    sprintf(filename, "art/%d.txt", num);
     
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
@@ -314,5 +319,10 @@ void islemTamamlandi()
     while (fgets(line, sizeof(line), fp) != NULL) {
     printf("%s", line); // okunan sırayı yazdır
 }
+    printf("\n");
     fclose(fp);
+ }
+
+ void rastgeleSoz() {
+
  }
