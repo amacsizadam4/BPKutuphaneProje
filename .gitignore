@@ -1,2 +1,7 @@
 # ignore folders
 .vscode/
+
+
+# specific files
+veri.txt
+a.exe

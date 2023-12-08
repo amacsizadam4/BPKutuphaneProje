@@ -6,6 +6,9 @@
 #include <time.h>
 #include <unistd.h> // SLEEP
 
+
+//DEFINELAR
+#define KONSOLTEMIZLE printf("\e[1;1H\e[2J");
 // BUTON PROTOTİPLERİ
 
 //yapım aşamasındaki fonksiyonlar
@@ -273,8 +276,8 @@ void gecersizSecim()
     printf("═════════════════════════════════════════════\n");
     printf("GEÇERSİZ SEÇİM, iki saniye içinde ana menüye dönülüyor\n");
     printf("═════════════════════════════════════════════\n");
-    sleep(2000);
-    printf("\e[1;1H\e[2J"); //CLEAR SCREEN
+    sleep(2);
+    KONSOLTEMIZLE;   //CLEAR SCREEN
     menu();
 }
 
@@ -292,7 +295,7 @@ void islemTamamlandi()
     printf("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
     printf("═════════════════════════════════════════════\n");
     getchar(); // herhangi bir girdi al
-    printf("\e[1;1H\e[2J"); // CLEAR SCREEN
+    KONSOLTEMIZLE; // CLEAR SCREEN
     menu();
  }
 
