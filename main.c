@@ -5,108 +5,328 @@
 #include <conio.h>
 #include <time.h>
 #include <unistd.h> // SLEEP
+#include <ctype.h> // lowerCase
 
+//global değişkenler
+char globalUser[50];
+int globalIsAdmin;
 
-//DEFINELAR
+// definelar
 #define KONSOLTEMIZLE printf("\e[1;1H\e[2J");
-// BUTON PROTOTİPLERİ
 
-//yapım aşamasındaki fonksiyonlar
-void anaMenu();
-void kullaniciMenu();
-void yoneticiMenu();
-void rastgeleCizim();
-void rastgeleSoz();
+// fonksiyonlar
+int girisMenu();
+void gecersizSecim();
+void girisEkrani();
+void kayitEkrani();
+void menu();
+void clearInputBuffer();
+int authenticateUser(char *username, char *password, int isAdmin);
+void toLowerCase(char *str);
 
 
-//bütün kitap fonksiyonları
-void kitapEkle(); // kitap ekleme butonu ana fonksiyonu
-void kitapHepsi();
+//kitap fonksiyonları
 void kitapAra();
+void kitapEkle();
+void kitapHepsi();
 void kitapSil();
+void kitapOduncAl();
+void kitapOduncBirak();
+
+//structlar
+struct User {
+    char username[50];
+    char password[50];
+    int isAdmin; // Yönetici için 1, kullanıcı ise 0
+};
 
 
 
-// ana fonksiyon prototipleri
-void menu(); // en başa dönmek istiyorsanız menu fonksiyonunu çağırmanız yeterli.
-void gecersizSecim(); // geçersiz seçim yapıldığında ana menüye atar
-void islemTamamlandi(); //işlem tamamlandıktan sonra ana menüye dönmeden önce uyarır.
-void clearInputBuffer(); // kullanıcı girdisi aldıktan sonra girdi temizleme
-
-
-int main (){
-    // karakter seçimini UTF-8 Türkçe yapar
+int main() {
+    KONSOLTEMIZLE;
+    //hoşgeldiniz eklenecek
     setlocale(LC_ALL, "tr_TR.UTF-8"); //BU ÇALIŞIYOR!
-    //setlocale(LC_ALL, "Turkish");
-    //setlocale(LC_ALL, "tr_TR");
+    girisMenu();
 
-    //hoşgeldiniz bölümü (bir kez çalışır)
-    printf("═════════════════HOŞGELDİNİZ═════════════════\n");
+}
 
-    rastgeleCizim();
 
-    printf("═════════════════════════════════════════════\n");
+// FONKSİYONLAR
+void kitapEkle();
 
-    menu(); // Ana Menü fonksiyonunu çağırır
+int girisMenu() {
+    int secim;
+    printf("════════════════════════GİRİŞ MENÜSÜ════════════════════════\n");
+    printf("1 - Kullanıcı Giriş\n2 - Kayıt Ol\n3 - Uygulamayı Kapat\n");
+    printf("Lütfen Seçiminizi Yapınız: ");
+    scanf("%d", &secim);
 
+    clearInputBuffer();
+
+    switch (secim)
+    {
+    case 1:
+    girisEkrani();
+    break;
+    case 2:
+    kayitEkrani();
+    break;
+    case 3:
+    exit(0);
+    default:
+    gecersizSecim();
+        break;
     }
 
 
-//     -----------------  fonksiyonlar  -----------------    
+}
 
-void menu(){
+void toLowerCase(char *str) {
+        while (*str) {
+        *str = tolower((unsigned char)*str);
+        str++;
+    }
+}
 
-      //switch case için gerekli(AÇIKLAMASI DEĞİŞECEK!!!!)
-        int secenek;
+void gecersizSecim() 
+{
+    printf("═════════════════════════════════════════════\n");
+    printf("GEÇERSİZ SEÇİM, iki saniye içinde ana menüye dönülüyor\n");
+    printf("═════════════════════════════════════════════\n");
+    sleep(2);
+    KONSOLTEMIZLE;   //CLEAR SCREEN
+    menu();
+}
 
+void islemTamamlandi()
+ {
+    printf("═════════════════════════════════════════════\n");
+    printf("İşlem Tamamlandı\n");
+    printf("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
+    printf("═════════════════════════════════════════════\n");
+    clearInputBuffer();
+    getchar(); // herhangi bir girdi al
+    KONSOLTEMIZLE; // CLEAR SCREEN
+    menu();
+ }
+
+void girisEkrani() {
+    char username[50];
+    char password[50];
+    printf("Kullanıcı adını giriniz: ");
+    scanf("%s", username);
+    printf("Şifrenizi giriniz: ");
+    scanf("%s", password);
+
+    if (authenticateUser(username, password, 0) || (authenticateUser(username, password, 1))) {
+        printf("Giriş Başarılı!\n");
+
+
+    // Copy the contents of username to globalUser
+    strcpy(globalUser, username);
+
+        printf("DEBUG -- %s, %d\n", globalUser, globalIsAdmin);
+        menu();
+
+
+    } else {
+        printf("Giriş başarısız, geçersiz bilgiler.\n");
+        girisMenu();
+    }
+
+}
+
+void kayitEkrani() {
+    struct User newUser;
+    int kayit1;
+    int teyit;
+
+    printf("Kullanıcı adını giriniz: ");
+    scanf("%s", newUser.username);
+
+    printf("Şifrenizi giriniz: ");
+    scanf("%s", newUser.password);
+
+    printf("1 - Kullanıcı Olarak Kaydet\n2 - Yönetici Olarak Kaydet\n");
+    scanf("%d",&kayit1);
+    
+    switch (kayit1) {
+    case 1:
+    newUser.isAdmin = 0;
+    printf("Kullanıcı Olarak Kaydedildi, ");
+    goto kayit;
+    case 2:
+    clearInputBuffer();
+    printf("Yönetici teyit şifresini giriniz: ");
+    scanf("%d", &teyit);
+    if (teyit==666) {
+        newUser.isAdmin=1;
+        printf("Yönetici olarak kaydedildi, ");
+        goto kayit;
+        }
+    else {
+        printf("Teyit şifresi yanlış, giriş ekranına dönülüyor.\n");
+        girisMenu();
+        } 
+    default:
+    printf("Geçersiz seçim, giriş ekranına dönülüyor.\n");
+    girisMenu();
+    }
+kayit:
+    // kullanıcı veri dosyasını ekleme modunda aç
+    FILE *file = fopen("data/users.txt", "a");
+    if (file == NULL) {
+        printf("Dosya açılamadı!\n");
+        exit(1);
+    }
+
+    // yeni kullanıcıyı kaydet
+    fprintf(file, "%s %s %d\n", newUser.username, newUser.password, newUser.isAdmin);
+
+    // dosyayı kapat
+    fclose(file);
+
+    printf("Kayıt tamamlandı, giriş ekranına dönülüyor.\n");
+
+    girisMenu();
+
+    
+
+}
+
+int authenticateUser(char *username, char *password, int isAdmin) {
+    struct User user;
+    FILE *file = fopen("data/users.txt", "r");
+
+    // Dosyayı aç
+    if (file == NULL) {
+        printf("Dosya açılamadı!\n");
+        exit(1);
+    }
+
+    // Her diziyi ara
+    while (fscanf(file, "%s %s %d", user.username, user.password, &user.isAdmin) == 3) {
+        // struct bilgileri doğru mu kontrol et
+        if (strcmp(username, user.username) == 0 && strcmp(password, user.password) == 0 && user.isAdmin == isAdmin) {
+            globalIsAdmin = user.isAdmin;          
+
+
+            fclose(file);
+
+            return 1; // yetkilendirme tamamlandı
+            
+        }
+    }
+    fclose(file);
+    return 0;//yetkilendirme başarısız
+}
+
+void menu() {
+    printf("═════════════════════════════════════════════\n");
+    int secenek;
+    int odunc;
+    if(globalIsAdmin == 1) {
+        goto yonetici;
+    } else { goto kullanici;}
+
+
+    yonetici:
         //ana menü tuşları
         printf("Ana Menü\n"); 
         printf("1. Kitap Ekle\n");
         printf("2. Kitap Ara\n");
         printf("3. Tüm Kitapları Göster\n");
         printf("4. Kitap Sil\n");
-        printf("5. Sistemi Kapat\n");
-        printf("Lütfen seçiminizi yapın: ");
+        printf("5. Ödünç Alınan Kitapları Görüntüle\n");
+        printf("6. Çıkış Yap\n");
+    printf("═════════════════════════════════════════════\n");    
+        printf("Lütfen seçiminizi yapın: ");    
+    
         scanf("%d", &secenek);
-
-
-    // Kullanıcı girdisine göre fonksiyonlarına iletir
+        clearInputBuffer();
         switch (secenek) {
             case 1:
-                clearInputBuffer(); 
-                kitapEkle();
-                break;
+            kitapEkle();
+            break;
             case 2:
-                clearInputBuffer();
-                kitapAra();
-                break;
+            kitapAra();
+            break;
             case 3:
-                clearInputBuffer();
-                kitapHepsi();
-                break;
+            kitapHepsi();
+            break;
             case 4:
-                clearInputBuffer();
-                kitapSil();
-                break;
+            kitapSil();
+            break;
             case 5:
-                printf("Sistem kapatılıyor. İyi günler!\n");
-                exit(1);
+            break;
+            case 6:
+            girisMenu();
+            break;
             default:
                 gecersizSecim();
-
-                
         }
+    exit(0);
+    kullanici:
 
+        //ana menü tuşları
+        printf("Ana Menü\n");
+        printf("1. Tüm Kitapları Göster\n");
+        printf("2. Kitap Ara\n");
+        printf("3. Kitap Ödünç Al/Bırak\n");
+        printf("4. Ödünç Aldığım Kitapları Görüntüle\n");
+        printf("5. Çıkış Yap\n");
+    printf("═════════════════════════════════════════════\n");
+        scanf("%d", &secenek);
+
+        switch (secenek) {
+            case 1:
+            kitapHepsi();
+            break;
+            case 2:
+            kitapAra();
+            break;
+            case 3:
+            int secenek2;
+            printf("1- Kitap Ödünç Al\n");
+            printf("2- Kitap Teslim Et\n");
+            printf("3- Menüye Geri Dön\n");
+            printf("Seçiminizi yapınız: ");
+            scanf("%d",&secenek2);
+            if (secenek2==1) {
+                kitapOduncAl();
+                printf("Ödünç almak istediğiniz kitabın kodunu yazınız: ");
+                scanf("%d", odunc);
+                
+
+                }
+            if (secenek2==2) {kitapOduncBirak();}
+            break;
+            case 4:
+            break;
+            case 5:
+            girisMenu();
+            default:
+                gecersizSecim();
+        }
+    exit(0);
 }
 
+void clearInputBuffer()
+ {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+    }
+}
 
-
+// KİTAP FONKSİYONLARI
 void kitapEkle()
 {
     char kitap1[50]; // Kitap ismi
     char kitap2[50]; // Kitap yazarı
     char kitap3[30]; // Kitap türü
     int kitap4; // Sayfa sayısı
+    int musaitlik=1;
+    char kisi[10] = "Müsait";
     printf("═════════════════════════════════════════════\n");
     printf("Seçilen: Kitap Ekle \n");
 
@@ -138,11 +358,11 @@ void kitapEkle()
     printf("4.Sayfa Sayısı: %d\n", kitap4);
 
     
- // bu kısım alınan kullanıcı değerlerini veri.txt dosyasına her girişi yeni satırda kaydeder.
-    FILE *file = fopen("veri.txt", "a");
+ // bu kısım alınan kullanıcı değerlerini kitaplar.txt dosyasına her girişi yeni satırda kaydeder.
+    FILE *file = fopen("data/kitaplar.txt", "a");
 
     if (file != NULL) {
-        fprintf(file, "%s, %s, %s, %d\n",kitap1,kitap2,kitap3,kitap4);
+        fprintf(file, "%s,%s,%s,%d,%d,%s\n",kitap1,kitap2,kitap3,kitap4,musaitlik,kisi);
         fclose(file);
         printf("Kitap bilgileri başarıyla kaydedildi.\n");
     } else {
@@ -157,175 +377,162 @@ void kitapEkle()
 
 void kitapAra()
 {
-    printf("═════════════════════════════════════════════\n");
-    printf("Seçilen: Kitap Ara\n");
-    const char *fileName = "veri.txt";
+    char searchInput[50];
+    int lineCount=1;
 
-    FILE *file = fopen(fileName, "r");  //r , w , a
+    char str1[50];
+    char str2[50];
+    char str3[30];
+    int int1, int2;
+    char str4[50];
 
-    if (file != NULL) {
-        char bookName[100], authorName[100], bookType[50];
-        int numPages;
-        char search[100];
+    //geçiçi değişkenler
+    char tstr1[50];
+    char tstr2[50];
+    char tstr3[30];
+    int tint1, tint2;
+    char tstr4[50];
 
-        printf("Aradığınız bilgiyi girin: ");
-        fgets(search, sizeof(search), stdin);
-        search[strcspn(search, "\n")] = '\0'; // \n karakterini siler.
+    int found=0;
+    printf("\nKitap İsmi/Yazarı/Türü Yazınız: ");
+    scanf(" %[^\n]", searchInput);  // istenen bilgiyi ara
 
-        int lineCount = 1;
-        int found = 0;
+    // büyük küçük harf uyumu farketmezsizin aramak için değiştir
+    toLowerCase(searchInput);
 
-        while (fscanf(file, "%9z9[^,],%99[^,],%49[^,],%d\n", bookName, authorName, bookType, &numPages) == 4) {
-            // Check if the search string is found in any field
-            if (strstr(bookName, search) != NULL || strstr(authorName, search) != NULL ||
-                strstr(bookType, search) != NULL || numPages == atoi(search)) {
-                printf("Kitap Kodu: %d -- Kitap: %s, Yazar: %s, Türü: %s, Sayfa Sayısı: %d\n", lineCount, bookName, authorName, bookType, numPages);
-                found = 1;
-            }
 
-            lineCount++;
-        }
-
-        if (!found) {
-            printf("Böyle bir kayıt bulunamadı.\n");
-        }
-
-        fclose(file);
-    } else {
-        printf("HATA! Dosya açılamadı.\n");
+    FILE *file;
+    file = fopen("data/kitaplar.txt", "r");  // Okuma modunda aç
+    if (file == NULL) {
+        printf("DİKKAT!, DOSYA AÇILAMADI.\n");
+        
     }
 
+
+    while (fscanf(file, " %[^,],%[^,],%[^,],%d,%d,%s", str1, str2, str3, &int1, &int2, str4) == 6) {
+        strcpy(tstr1, str1);
+        strcpy(tstr2, str2);
+        strcpy(tstr3, str3);
+        tint1 = int1;
+        tint2 = int2;
+        strcpy(tstr4, str4);
+        
+
+        toLowerCase(str1);
+        toLowerCase(str2);
+        toLowerCase(str3);
+        toLowerCase(str4);
+
+        // ARAMAYLA UYUŞANI BUL
+        if (strstr(str1, searchInput) || strstr(str2, searchInput) ||
+            strstr(str3, searchInput) || strstr(str4, searchInput)) {
+                found=1;
+            strcpy(str1, tstr1);
+            strcpy(str2, tstr2);
+            strcpy(str3, tstr3);
+            int1 = tint1;
+            int2 = tint2;
+            strcpy(str4, tstr4);                
+            printf("Search result - Line %d: %s, %s, %s, %d, %d, %s\n", lineCount, str1, str2, str3, int1, int2, str4);
+        }
+        if(found==0){
+            printf("Aradığınız girdiyle sonuç bulunamadı.\n");
+            islemTamamlandi();
+            menu();
+        }
+        lineCount++;
+    }
+
+    // Dosyayı kapat
+    fclose(file);
     islemTamamlandi();
 }
 
-void kitapHepsi()
-{
+void kitapHepsi(){
+    FILE *file;
+    file = fopen("data/kitaplar.txt", "r");  // Yazma modunda aç
 
-    printf("═════════════════════════════════════════════\n");
-    printf("Seçilen: Tüm Kitapları Göster\n");
-
-     FILE *file = fopen("veri.txt", "r");
-
-    if (file != NULL) {
-        int line = 1; // sıra sayısı / kodu
-        char bookName[100], authorName[100], bookType[50];
-        int numPages;
-
-        // dosyanın sonuna kadar okur
-        while (fscanf(file, "%99[^,],%99[^,],%49[^,],%d\n", bookName, authorName, bookType, &numPages) == 4) {
-            // okunan verileri değerlere ata
-            printf("Kitap Kodu: %d -- Kitap: %s, Yazar:%s, Türü:%s, Sayfa Sayısı: %d\n", line, bookName, authorName, bookType, numPages);
-
-            line++;
-        }
-
-        fclose(file);
-    } else {
-        printf("Error opening the file.\n");
+    if (file == NULL) {
+        printf("DİKKAT, DOSYA AÇILAMAI!.\n");
     }
 
+    // Değişkenler
+    char str1[50];
+    char str2[50];
+    char str3[30];
+    int int1, int2;
+    char str4[50];
+
+    int lineCount = 0;
+
+    // Her sıradaki yazıları oku ve ayrı ayrı değişkenlere ata(virgül ile)
+    while (fscanf(file, " %[^,],%[^,],%[^,],%d,%d,%s", str1, str2, str3, &int1, &int2, str4) == 6) {
+        // Okunan yazıları yazdır
+        //printf("Read values: %c, %c, %c, %d, %d, %c\n", char1, char2, char3, int1, int2, char4);
+        printf("Kitap Kodu : %d - Kitap İsmi: %s - Yazar: %s - Tür: %s - Sayfa Sayısı: %d - Sahibi: %s\n", ++lineCount, str1,str2,str3,int1,str4);
+    }
+
+    // Dosyayı kapat
+    fclose(file);
     islemTamamlandi();
 }
 
-void kitapSil()
-{
-    printf("═════════════════════════════════════════════\n");
-    printf("Seçilen: Kitap Sil\n");
-    const char *fileName = "veri.txt";
-    int lineToDelete;
-    printf("Silmek istediğinz kitabın kodunu girin: \n");
-    scanf("%d",&lineToDelete);
+void kitapSil(){
+    const char *filename = "data/kitaplar.txt";
+        FILE *file, *temp;
+    char buffer[1000];
+    int lineToDelete, currentLine = 1;
 
-
-   
-    
-
-    FILE *oldFile = fopen(fileName, "r");
-    FILE *newFile = fopen("temp.txt", "w");
-
-    if (oldFile == NULL || newFile == NULL) {
-        printf("HATA! Dosya açılamadı.\n");
+    // Dosyayı okuma modunda aç
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Dosya okuma modunda açılamadı.\n");
         exit(1);
     }
 
-    char buffer[1000];
-    int currentLine = 1;
+    // Open a temporary file for writing
+    temp = fopen("data/temp.txt", "w");
+    if (temp == NULL) {
+        printf("Error opening temporary file for writing.\n");
+        fclose(file);
+        exit(1);
+    }
 
-    // Copy lines from old file to new file, excluding the line to delete
-    while (fgets(buffer, sizeof(buffer), oldFile) != NULL) {
+    // Get the line number to delete from the user
+    printf("Enter the line number to delete: ");
+    scanf("%d", &lineToDelete);
+
+    // Read lines from the original file and write to the temporary file
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
         if (currentLine != lineToDelete) {
-            fputs(buffer, newFile);
+            fputs(buffer, temp);
         }
         currentLine++;
     }
 
-    fclose(oldFile);
-    fclose(newFile);
+    // Close both files
+    fclose(file);
+    fclose(temp);
 
-    // Replace the old file with the new one
-    remove(fileName);
-    rename("temp.txt", fileName);
-
-    printf("Kodu %d olan kitap silindi.\n", lineToDelete);
-    islemTamamlandi();
-    
-}
-
-void gecersizSecim() 
-{
-    printf("═════════════════════════════════════════════\n");
-    printf("GEÇERSİZ SEÇİM, iki saniye içinde ana menüye dönülüyor\n");
-    printf("═════════════════════════════════════════════\n");
-    sleep(2);
-    KONSOLTEMIZLE;   //CLEAR SCREEN
-    menu();
-}
-
-void clearInputBuffer()
- {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF) {
+    // Remove the original file
+    if (remove(filename) != 0) {
+        printf("Error removing the original file.\n");
+        exit(1);
     }
+
+    // Rename the temporary file to the original file
+    if (rename("data/temp.txt", filename) != 0) {
+        printf("Error renaming the temporary file.\n");
+        exit(1);
+    }
+
+    printf("Line %d deleted successfully.\n", lineToDelete);
+
+    islemTamamlandi();
 }
 
-void islemTamamlandi()
- {
-    printf("═════════════════════════════════════════════\n");
-    printf("İşlem Tamamlandı\n");
-    printf("Ana menüye dönmek için herhangi bir tuşa basınız.\n");
-    printf("═════════════════════════════════════════════\n");
-    getchar(); // herhangi bir girdi al
-    KONSOLTEMIZLE; // CLEAR SCREEN
-    menu();
- }
-
- void rastgeleCizim() 
- {
-    srand(time(NULL));
-    int num = rand() % 5 + 1;
-    char snum[5];
-
-    char filename[30];
-
-    itoa(num, snum, 5); // rastgele int sayısı stringe çevrilir.
-
-    printf("debug - random number is %d\n", num);
-    //const char *filename = ("../art/%s.txt", snum);
-    sprintf(filename, "art/%d.txt", num);
-    
-    FILE *fp = fopen(filename, "r");
-    if (fp == NULL) {
-    printf("Dosya açılamadı, ana menüye dönülüyor: %s\n", filename);
-    menu();
+void kitapOduncAl(){
 }
-    char line[1024]; // buffer
-    while (fgets(line, sizeof(line), fp) != NULL) {
-    printf("%s", line); // okunan sırayı yazdır
+void kitapOduncBirak(){
+
 }
-    printf("\n");
-    fclose(fp);
- }
-
- void rastgeleSoz() {
-
- }

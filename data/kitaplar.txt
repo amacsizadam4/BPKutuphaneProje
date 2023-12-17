@@ -1,0 +1,2 @@
+Othello,William Shakespeare,Roman,331,1,Müsait
+Arsene Lupen,Maurice Leblanc,Roman,210,1,Müsait
