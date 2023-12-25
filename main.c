@@ -32,6 +32,7 @@ void kitapHepsi();
 void kitapSil();
 void kitapOduncAl();
 void kitapOduncBirak();
+void tumOduncKitaplar();
 
 //structlar
 struct User {
@@ -40,9 +41,15 @@ struct User {
     int isAdmin; // Yönetici için 1, kullanıcı ise 0
 };
 
-
+struct Book {
+    char title[256];
+    char author[256];
+    char genre[256];
+    int pages;
+};
 
 int main() {
+    globalIsAdmin = 3; // giriş yapmadan önce önemsiz bir değere atanır
     KONSOLTEMIZLE;
     //hoşgeldiniz eklenecek
     setlocale(LC_ALL, "tr_TR.UTF-8"); //BU ÇALIŞIYOR!
@@ -174,7 +181,7 @@ void kayitEkrani() {
     }
 kayit:
     // kullanıcı veri dosyasını ekleme modunda aç
-    FILE *file = fopen("data/users.txt", "a");
+    FILE *file = fopen("data/users/users.txt", "a");
     if (file == NULL) {
         printf("Dosya açılamadı!\n");
         exit(1);
@@ -196,7 +203,7 @@ kayit:
 
 int authenticateUser(char *username, char *password, int isAdmin) {
     struct User user;
-    FILE *file = fopen("data/users.txt", "r");
+    FILE *file = fopen("data/users/users.txt", "r");
 
     // Dosyayı aç
     if (file == NULL) {
@@ -222,12 +229,15 @@ int authenticateUser(char *username, char *password, int isAdmin) {
 }
 
 void menu() {
+    KONSOLTEMIZLE;
     printf("═════════════════════════════════════════════\n");
+    printf("Hoşgeldiniz: %s\n",globalUser);
     int secenek;
     int odunc;
     if(globalIsAdmin == 1) {
         goto yonetici;
-    } else { goto kullanici;}
+    }  if(globalIsAdmin == 0) { goto kullanici;}
+    else {girisMenu();}
 
 
     yonetici:
@@ -237,8 +247,7 @@ void menu() {
         printf("2. Kitap Ara\n");
         printf("3. Tüm Kitapları Göster\n");
         printf("4. Kitap Sil\n");
-        printf("5. Ödünç Alınan Kitapları Görüntüle\n");
-        printf("6. Çıkış Yap\n");
+        printf("5. Çıkış Yap\n");
     printf("═════════════════════════════════════════════\n");    
         printf("Lütfen seçiminizi yapın: ");    
     
@@ -258,8 +267,6 @@ void menu() {
             kitapSil();
             break;
             case 5:
-            break;
-            case 6:
             girisMenu();
             break;
             default:
@@ -292,16 +299,12 @@ void menu() {
             printf("3- Menüye Geri Dön\n");
             printf("Seçiminizi yapınız: ");
             scanf("%d",&secenek2);
-            if (secenek2==1) {
-                kitapOduncAl();
-                printf("Ödünç almak istediğiniz kitabın kodunu yazınız: ");
-                scanf("%d", odunc);
-                
-
-                }
+            if (secenek2==1) { kitapOduncAl();}
             if (secenek2==2) {kitapOduncBirak();}
+            else {menu();}
             break;
             case 4:
+            tumOduncKitaplar();
             break;
             case 5:
             girisMenu();
@@ -325,8 +328,6 @@ void kitapEkle()
     char kitap2[50]; // Kitap yazarı
     char kitap3[30]; // Kitap türü
     int kitap4; // Sayfa sayısı
-    int musaitlik=1;
-    char kisi[10] = "Müsait";
     printf("═════════════════════════════════════════════\n");
     printf("Seçilen: Kitap Ekle \n");
 
@@ -362,7 +363,7 @@ void kitapEkle()
     FILE *file = fopen("data/kitaplar.txt", "a");
 
     if (file != NULL) {
-        fprintf(file, "%s,%s,%s,%d,%d,%s\n",kitap1,kitap2,kitap3,kitap4,musaitlik,kisi);
+        fprintf(file, "%s,%s,%s,%d\n",kitap1,kitap2,kitap3,kitap4);
         fclose(file);
         printf("Kitap bilgileri başarıyla kaydedildi.\n");
     } else {
@@ -383,15 +384,13 @@ void kitapAra()
     char str1[50];
     char str2[50];
     char str3[30];
-    int int1, int2;
-    char str4[50];
+    int int1;
 
     //geçiçi değişkenler
     char tstr1[50];
     char tstr2[50];
     char tstr3[30];
-    int tint1, tint2;
-    char tstr4[50];
+    int tint1;
 
     int found=0;
     printf("\nKitap İsmi/Yazarı/Türü Yazınız: ");
@@ -409,31 +408,27 @@ void kitapAra()
     }
 
 
-    while (fscanf(file, " %[^,],%[^,],%[^,],%d,%d,%s", str1, str2, str3, &int1, &int2, str4) == 6) {
+    while (fscanf(file, " %[^,],%[^,],%[^,],%d", str1, str2, str3, &int1) == 4) {
         strcpy(tstr1, str1);
         strcpy(tstr2, str2);
         strcpy(tstr3, str3);
         tint1 = int1;
-        tint2 = int2;
-        strcpy(tstr4, str4);
         
 
         toLowerCase(str1);
         toLowerCase(str2);
         toLowerCase(str3);
-        toLowerCase(str4);
 
         // ARAMAYLA UYUŞANI BUL
         if (strstr(str1, searchInput) || strstr(str2, searchInput) ||
-            strstr(str3, searchInput) || strstr(str4, searchInput)) {
+            strstr(str3, searchInput)) {
                 found=1;
             strcpy(str1, tstr1);
             strcpy(str2, tstr2);
             strcpy(str3, tstr3);
             int1 = tint1;
-            int2 = tint2;
-            strcpy(str4, tstr4);                
-            printf("Search result - Line %d: %s, %s, %s, %d, %d, %s\n", lineCount, str1, str2, str3, int1, int2, str4);
+
+            printf("Arama Sonucu - Kitap Kodu : %d - Kitap İsmi: %s - Yazar: %s - Tür: %s - Sayfa Sayısı: %d\n", lineCount, str1, str2, str3, int1);
         }
         if(found==0){
             printf("Aradığınız girdiyle sonuç bulunamadı.\n");
@@ -460,16 +455,15 @@ void kitapHepsi(){
     char str1[50];
     char str2[50];
     char str3[30];
-    int int1, int2;
-    char str4[50];
-
+    int int1;
+    printf("═════════════════════════════════════════════\n");
     int lineCount = 0;
-
+    printf("Kütüphanemizdeki tüm kitaplar aşağıdadır: \n");
     // Her sıradaki yazıları oku ve ayrı ayrı değişkenlere ata(virgül ile)
-    while (fscanf(file, " %[^,],%[^,],%[^,],%d,%d,%s", str1, str2, str3, &int1, &int2, str4) == 6) {
+    while (fscanf(file, " %[^,],%[^,],%[^,],%d,%d,%s", str1, str2, str3, &int1) == 4) {
         // Okunan yazıları yazdır
         //printf("Read values: %c, %c, %c, %d, %d, %c\n", char1, char2, char3, int1, int2, char4);
-        printf("Kitap Kodu : %d - Kitap İsmi: %s - Yazar: %s - Tür: %s - Sayfa Sayısı: %d - Sahibi: %s\n", ++lineCount, str1,str2,str3,int1,str4);
+        printf("Kitap Kodu : %d - Kitap İsmi: %s - Yazar: %s - Tür: %s - Sayfa Sayısı: %d\n", ++lineCount, str1,str2,str3,int1);
     }
 
     // Dosyayı kapat
@@ -479,7 +473,7 @@ void kitapHepsi(){
 
 void kitapSil(){
     const char *filename = "data/kitaplar.txt";
-        FILE *file, *temp;
+    FILE *file, *temp;
     char buffer[1000];
     int lineToDelete, currentLine = 1;
 
@@ -490,19 +484,20 @@ void kitapSil(){
         exit(1);
     }
 
-    // Open a temporary file for writing
+    // Yazdırmak için geçiçi bir dosya aç
     temp = fopen("data/temp.txt", "w");
     if (temp == NULL) {
-        printf("Error opening temporary file for writing.\n");
+        printf("HATA! Geçiçi dosya açılamadı.\n");
         fclose(file);
         exit(1);
     }
 
-    // Get the line number to delete from the user
-    printf("Enter the line number to delete: ");
+    // Silinecek kitap kodunu kullanıcıdan iste
+    printf("KİTAPLARIN KODLARINI (KİTAP ARA) veya (TÜM KİTAPLARI GÖSTER) butonlarından öğrenebilirsiniz.\n");
+    printf("Silinecek kitabın kodunu giriniz: ");
     scanf("%d", &lineToDelete);
 
-    // Read lines from the original file and write to the temporary file
+    // Orijnal dosyadaki metinleri geçiçi dosyaya geçir
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         if (currentLine != lineToDelete) {
             fputs(buffer, temp);
@@ -510,29 +505,164 @@ void kitapSil(){
         currentLine++;
     }
 
-    // Close both files
+    // İki dosyayı da kapat
     fclose(file);
     fclose(temp);
 
-    // Remove the original file
+    // Orijinal dosyayı sil
     if (remove(filename) != 0) {
-        printf("Error removing the original file.\n");
+        printf("HATA! Orijinal dosya silinemedi.\n");
         exit(1);
     }
 
-    // Rename the temporary file to the original file
+    // Geçiçi dosyanın ismini değiştir
     if (rename("data/temp.txt", filename) != 0) {
-        printf("Error renaming the temporary file.\n");
+        printf("Geçiçi dosya ismi değiştirelemedi.\n");
         exit(1);
     }
 
-    printf("Line %d deleted successfully.\n", lineToDelete);
+    printf("%d : Kodlu kitap başarıyla silindi\n", lineToDelete);
 
     islemTamamlandi();
 }
 
 void kitapOduncAl(){
+    char buffer[256];
+
+    FILE *file = fopen("data/kitaplar.txt", "r");
+    if (file == NULL) {
+        perror("DOSYA AÇILAMADI");
+        
+    }
+
+    int desiredLine;
+    printf("Ödünç alacağınız kitabın kodunu giriniz: ");
+    scanf("%d", &desiredLine);
+    printf("═════════════════════════════════════════════\n");
+    struct Book book;
+    int currentLine = 0;
+
+    // Read the file line by line
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        currentLine++;
+
+        // Check if it's the desired line
+        if (currentLine == desiredLine) {
+            // Parse the line and copy values to the struct
+            sscanf(buffer, "%[^,],%[^,],%[^,],%d",
+                   book.title, book.author, book.genre, &book.pages);
+
+            // Print the copied values for verification
+            printf("Ödünç aldığınız kitabın bilgileri: \nKitap Adı: %s\nYazar: %s\nTür: %s\nSayfa Sayısı: %d\n",
+                   book.title, book.author, book.genre, book.pages);
+
+            // You can break here if you only want to copy one line
+            // break;
+        }
+    }
+
+    fclose(file);
+    //YAZDIRMA KISMI
+    char filePath[256];
+    snprintf(filePath, sizeof(filePath), "data/users/%s.txt", globalUser);
+    FILE *fileUser = fopen(filePath, "a");
+
+    if (fileUser != NULL) {
+        fprintf(fileUser, "%s,%s,%s,%d\n",book.title,book.author,book.genre,book.pages);
+        fclose(fileUser);
+        printf("Kitap bilgileri başarıyla kaydedildi.\n");
+    } else {
+        printf("DİKKAT, DOSYA AÇILAMADI!\n");
+        gecersizSecim();
+    }
+
+    islemTamamlandi();
 }
-void kitapOduncBirak(){
+
+void kitapOduncBirak() {
+    char filename[256];
+    snprintf(filename, sizeof(filename), "data/users/%s.txt", globalUser);
+    FILE *file, *temp;
+    char buffer[1000];
+    int lineToDelete, currentLine = 1;
+
+    // Dosyayı okuma modunda aç
+    file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Dosya okuma modunda açılamadı.\n");
+        exit(1);
+    }
+
+    // Yazdırmak için geçiçi bir dosya aç
+    temp = fopen("data/users/temp.txt", "w");
+    if (temp == NULL) {
+        printf("HATA! Geçiçi dosya açılamadı.\n");
+        fclose(file);
+        exit(1);
+    }
+
+    // Silinecek kitap kodunu kullanıcıdan iste
+    printf("Geri teslim edeceğiniz kitapların kodunu ÖDÜNÇ ALDIĞIM KİTAPLARI GÖSTER kısmından öğrenin!\n");
+    printf("Teslim edilecek kitabın kodunu giriniz: ");
+    scanf("%d", &lineToDelete);
+
+    // Orijnal dosyadaki metinleri geçiçi dosyaya geçir
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        if (currentLine != lineToDelete) {
+            fputs(buffer, temp);
+        }
+        currentLine++;
+    }
+
+    // İki dosyayı da kapat
+    fclose(file);
+    fclose(temp);
+
+    // Orijinal dosyayı sil
+    if (remove(filename) != 0) {
+        printf("HATA! Orijinal dosya silinemedi.\n");
+        exit(1);
+    }
+
+    // Geçiçi dosyanın ismini değiştir
+    if (rename("data/users/temp.txt", filename) != 0) {
+        printf("Geçiçi dosya ismi değiştirelemedi.\n");
+        exit(1);
+    }
+
+    printf("%d : Kodlu kitap başarıyla teslim edilddi\n", lineToDelete);
+
+    islemTamamlandi();
+}
+
+void tumOduncKitaplar() {
+
+    char filename[256];
+    snprintf(filename, sizeof(filename), "data/users/%s.txt", globalUser);
+    FILE *file;
+    file = fopen(filename, "r");  // Yazma modunda aç
+
+    if (file == NULL) {
+        printf("DİKKAT, DOSYA AÇILAMAI!.\n");
+    }
+
+    // Değişkenler
+    char str1[50];
+    char str2[50];
+    char str3[30];
+    int int1;
+
+    int lineCount = 0;
+    printf("%s kullanıcısının ödünç aldığı kitaplar aşağıdadır: \n", globalUser);
+    // Her sıradaki yazıları oku ve ayrı ayrı değişkenlere ata(virgül ile)
+    while (fscanf(file, " %[^,],%[^,],%[^,],%d,%d,%s", str1, str2, str3, &int1) == 4) {
+        // Okunan yazıları yazdır
+        //printf("Read values: %c, %c, %c, %d, %d, %c\n", char1, char2, char3, int1, int2, char4);
+        printf("Kitap Kodu : %d - Kitap İsmi: %s - Yazar: %s - Tür: %s - Sayfa Sayısı: %d\n", ++lineCount, str1,str2,str3,int1);
+    }
+
+    // Dosyayı kapat
+    fclose(file);
+    islemTamamlandi();
 
 }

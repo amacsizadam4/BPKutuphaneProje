@@ -1,2 +1,4 @@
-Othello,William Shakespeare,Roman,331,1,Müsait
-Arsene Lupen,Maurice Leblanc,Roman,210,1,Müsait
+Othello,William Shakespeare,Roman,331
+Robinson Crusoe,Daniel Defoe,Roman,400
+Suç ve Ceza,Dostoyevski,Roman,670
+Macbeth,William Shakespeare,Trajedi,150

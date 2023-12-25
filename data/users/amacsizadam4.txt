@@ -1,0 +1,2 @@
+Othello,William Shakespeare,Roman,331
+King Oedipus,Sophacles,Destan,105
