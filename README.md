@@ -1,6 +1,6 @@
 # KütüphaneProje
 
-<img src="file:///C:/Users/erenc/Desktop/logo_3.png" title="" alt="logo_3.png" data-align="center">
+[igu](https://cdn.gelisim.edu.tr/logo/logo_3.png)
 
 ## İstanbul Gelişim Üniversitesi - Bilgisayar Programcılığı
 
