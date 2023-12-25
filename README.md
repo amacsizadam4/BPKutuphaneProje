@@ -1,6 +1,6 @@
 # KütüphaneProje
 
-[igu](https://cdn.gelisim.edu.tr/logo/logo_3.png)
+![igu](https://cdn.gelisim.edu.tr/logo/logo_3.png)
 
 ## İstanbul Gelişim Üniversitesi - Bilgisayar Programcılığı
 
