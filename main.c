@@ -23,7 +23,7 @@ void menu();
 void clearInputBuffer();
 int authenticateUser(char *username, char *password, int isAdmin);
 void toLowerCase(char *str);
-
+void rastgeleCizim();
 
 //kitap fonksiyonları
 void kitapAra();
@@ -51,7 +51,8 @@ struct Book {
 int main() {
     globalIsAdmin = 3; // giriş yapmadan önce önemsiz bir değere atanır
     KONSOLTEMIZLE;
-    //hoşgeldiniz eklenecek
+    //hoşgeldiniz (bir kere çalışır)
+ 
     setlocale(LC_ALL, "tr_TR.UTF-8"); //BU ÇALIŞIYOR!
     girisMenu();
 
@@ -62,9 +63,18 @@ int main() {
 void kitapEkle();
 
 int girisMenu() {
+    globalIsAdmin=5; //bug engelleyici
+    KONSOLTEMIZLE;
+    printf("═════════════════HOŞGELDİNİZ═════════════════\n");
+
+    rastgeleCizim();
+
+    printf("═════════════════════════════════════════════\n");
     int secim;
     printf("════════════════════════GİRİŞ MENÜSÜ════════════════════════\n");
     printf("1 - Kullanıcı Giriş\n2 - Kayıt Ol\n3 - Uygulamayı Kapat\n");
+    printf("════════════════════════════════════════════════════════════\n");
+
     printf("Lütfen Seçiminizi Yapınız: ");
     scanf("%d", &secim);
 
@@ -228,6 +238,10 @@ int authenticateUser(char *username, char *password, int isAdmin) {
 
 void menu() {
     KONSOLTEMIZLE;
+    printf("═════════════════════════════════════════════\n");
+    rastgeleCizim();
+
+    printf("═════════════════════════════════════════════\n");
     printf("═════════════════════════════════════════════\n");
     printf("Hoşgeldiniz: %s\n",globalUser);
     int secenek;
@@ -663,3 +677,30 @@ void tumOduncKitaplar() {
     islemTamamlandi();
 
 }
+
+ void rastgeleCizim() 
+ {
+    srand(time(NULL));
+    int num = rand() % 5 + 1;
+    char snum[5];
+
+    char filename[30];
+
+    itoa(num, snum, 5); // rastgele int sayısı stringe çevrilir.
+
+    //printf("debug - random number is %d\n", num);
+    //const char *filename = ("../art/%s.txt", snum);
+    sprintf(filename, "data/art/%d.txt", num);
+    
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+    printf("Dosya açılamadı, ana menüye dönülüyor: %s\n", filename);
+    menu();
+}
+    char line[1024]; // buffer
+    while (fgets(line, sizeof(line), fp) != NULL) {
+    printf("%s", line); // okunan sırayı yazdır
+}
+    printf("\n");
+    fclose(fp);
+ }
