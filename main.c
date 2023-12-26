@@ -127,10 +127,8 @@ void girisEkrani() {
 
     if (authenticateUser(username, password, 0) || (authenticateUser(username, password, 1))) {
         printf("Giriş Başarılı!\n");
-
-
-    // Copy the contents of username to globalUser
-    strcpy(globalUser, username);
+        //globalUser değişkenini username olarak ata
+        strcpy(globalUser, username);
 
         printf("DEBUG -- %s, %d\n", globalUser, globalIsAdmin);
         menu();
@@ -462,7 +460,6 @@ void kitapHepsi(){
     // Her sıradaki yazıları oku ve ayrı ayrı değişkenlere ata(virgül ile)
     while (fscanf(file, " %[^,],%[^,],%[^,],%d,%d,%s", str1, str2, str3, &int1) == 4) {
         // Okunan yazıları yazdır
-        //printf("Read values: %c, %c, %c, %d, %d, %c\n", char1, char2, char3, int1, int2, char4);
         printf("Kitap Kodu : %d - Kitap İsmi: %s - Yazar: %s - Tür: %s - Sayfa Sayısı: %d\n", ++lineCount, str1,str2,str3,int1);
     }
 
@@ -542,21 +539,21 @@ void kitapOduncAl(){
     struct Book book;
     int currentLine = 0;
 
-    // Read the file line by line
+    // Dosyayı sıra sıra oku
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         currentLine++;
 
-        // Check if it's the desired line
+        // İstenilen sıra kontrolu
         if (currentLine == desiredLine) {
-            // Parse the line and copy values to the struct
+            // Sırayı parçalara ayır ve değişkenlere ata
             sscanf(buffer, "%[^,],%[^,],%[^,],%d",
                    book.title, book.author, book.genre, &book.pages);
 
-            // Print the copied values for verification
+            // Parçalara ayrılan değişkenleri yazdır.
             printf("Ödünç aldığınız kitabın bilgileri: \nKitap Adı: %s\nYazar: %s\nTür: %s\nSayfa Sayısı: %d\n",
                    book.title, book.author, book.genre, book.pages);
 
-            // You can break here if you only want to copy one line
+            // Tek bir sıra kopyalanmak isteniyorsa break kullanılabilir
             // break;
         }
     }
