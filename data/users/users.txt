@@ -2,3 +2,4 @@ eren ciftci 1
 amacsizadam4 test31 0
 mehmeteren ciftci 1
 kullanici kullanici 0
+testalo aloalo 0

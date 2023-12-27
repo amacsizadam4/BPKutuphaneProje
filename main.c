@@ -60,7 +60,6 @@ int main() {
 
 
 // FONKSİYONLAR
-void kitapEkle();
 
 int girisMenu() {
     globalIsAdmin=5; //bug engelleyici
@@ -69,7 +68,6 @@ int girisMenu() {
 
     rastgeleCizim();
 
-    printf("═════════════════════════════════════════════\n");
     int secim;
     printf("════════════════════════GİRİŞ MENÜSÜ════════════════════════\n");
     printf("1 - Kullanıcı Giriş\n2 - Kayıt Ol\n3 - Uygulamayı Kapat\n");
@@ -187,8 +185,10 @@ void kayitEkrani() {
     printf("Geçersiz seçim, giriş ekranına dönülüyor.\n");
     girisMenu();
     }
-kayit:
+kayit: ;
+	
     // kullanıcı veri dosyasını ekleme modunda aç
+    
     FILE *file = fopen("data/users/users.txt", "a");
     if (file == NULL) {
         printf("Dosya açılamadı!\n");
@@ -241,7 +241,6 @@ void menu() {
     printf("═════════════════════════════════════════════\n");
     rastgeleCizim();
 
-    printf("═════════════════════════════════════════════\n");
     printf("═════════════════════════════════════════════\n");
     printf("Hoşgeldiniz: %s\n",globalUser);
     int secenek;
@@ -304,7 +303,7 @@ void menu() {
             case 2:
             kitapAra();
             break;
-            case 3:
+            case 3: ;
             int secenek2;
             printf("1- Kitap Ödünç Al\n");
             printf("2- Kitap Teslim Et\n");
@@ -336,6 +335,9 @@ void clearInputBuffer()
 // KİTAP FONKSİYONLARI
 void kitapEkle()
 {
+    KONSOLTEMIZLE;
+    rastgeleCizim();
+
     char kitap1[50]; // Kitap ismi
     char kitap2[50]; // Kitap yazarı
     char kitap3[30]; // Kitap türü
@@ -390,42 +392,44 @@ void kitapEkle()
 
 void kitapAra()
 {
+    KONSOLTEMIZLE;
+    rastgeleCizim();
+
     char searchInput[50];
-    int lineCount=1;
+    int lineCount = 1;
 
     char str1[50];
     char str2[50];
     char str3[30];
     int int1;
 
-    //geçiçi değişkenler
+    // geçici değişkenler
     char tstr1[50];
     char tstr2[50];
     char tstr3[30];
     int tint1;
 
-    int found=0;
+    int found = 0;
     printf("\nKitap İsmi/Yazarı/Türü Yazınız: ");
     scanf(" %[^\n]", searchInput);  // istenen bilgiyi ara
 
     // büyük küçük harf uyumu farketmezsizin aramak için değiştir
     toLowerCase(searchInput);
 
-
     FILE *file;
     file = fopen("data/kitaplar.txt", "r");  // Okuma modunda aç
-    if (file == NULL) {
+    if (file == NULL)
+    {
         printf("DİKKAT!, DOSYA AÇILAMADI.\n");
-        
+        return;
     }
 
-
-    while (fscanf(file, " %[^,],%[^,],%[^,],%d", str1, str2, str3, &int1) == 4) {
+    while (fscanf(file, " %[^,],%[^,],%[^,],%d", str1, str2, str3, &int1) == 4)
+    {
         strcpy(tstr1, str1);
         strcpy(tstr2, str2);
         strcpy(tstr3, str3);
         tint1 = int1;
-        
 
         toLowerCase(str1);
         toLowerCase(str2);
@@ -433,8 +437,9 @@ void kitapAra()
 
         // ARAMAYLA UYUŞANI BUL
         if (strstr(str1, searchInput) || strstr(str2, searchInput) ||
-            strstr(str3, searchInput)) {
-                found=1;
+            strstr(str3, searchInput))
+        {
+            found = 1;
             strcpy(str1, tstr1);
             strcpy(str2, tstr2);
             strcpy(str3, tstr3);
@@ -442,20 +447,25 @@ void kitapAra()
 
             printf("Arama Sonucu - Kitap Kodu : %d - Kitap İsmi: %s - Yazar: %s - Tür: %s - Sayfa Sayısı: %d\n", lineCount, str1, str2, str3, int1);
         }
-        if(found==0){
-            printf("Aradığınız girdiyle sonuç bulunamadı.\n");
-            islemTamamlandi();
-            menu();
-        }
+
         lineCount++;
     }
 
     // Dosyayı kapat
     fclose(file);
+
+    if (found == 0)
+    {
+        printf("Aradığınız girdiyle sonuç bulunamadı.\n");
+    }
+
     islemTamamlandi();
 }
 
 void kitapHepsi(){
+    KONSOLTEMIZLE;
+    rastgeleCizim();
+
     FILE *file;
     file = fopen("data/kitaplar.txt", "r");  // Yazma modunda aç
 
@@ -483,6 +493,9 @@ void kitapHepsi(){
 }
 
 void kitapSil(){
+    KONSOLTEMIZLE;
+    rastgeleCizim();
+
     const char *filename = "data/kitaplar.txt";
     FILE *file, *temp;
     char buffer[1000];
@@ -538,6 +551,9 @@ void kitapSil(){
 }
 
 void kitapOduncAl(){
+    KONSOLTEMIZLE;
+    rastgeleCizim();
+
     char buffer[256];
 
     FILE *file = fopen("data/kitaplar.txt", "r");
@@ -591,6 +607,9 @@ void kitapOduncAl(){
 }
 
 void kitapOduncBirak() {
+    KONSOLTEMIZLE;
+    rastgeleCizim();
+
     char filename[256];
     snprintf(filename, sizeof(filename), "data/users/%s.txt", globalUser);
     FILE *file, *temp;
@@ -647,6 +666,9 @@ void kitapOduncBirak() {
 }
 
 void tumOduncKitaplar() {
+    KONSOLTEMIZLE;
+    rastgeleCizim();
+
 
     char filename[256];
     snprintf(filename, sizeof(filename), "data/users/%s.txt", globalUser);
@@ -694,8 +716,7 @@ void tumOduncKitaplar() {
     
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
-    printf("Dosya açılamadı, ana menüye dönülüyor: %s\n", filename);
-    menu();
+    printf("Çizim dosyası açılamadı: %s\n", filename);
 }
     char line[1024]; // buffer
     while (fgets(line, sizeof(line), fp) != NULL) {
@@ -703,4 +724,6 @@ void tumOduncKitaplar() {
 }
     printf("\n");
     fclose(fp);
+
+        printf("═════════════════════════════════════════════\n");
  }
