@@ -1,6 +1,7 @@
 # Basit Kütüphane Sistemi
 
-![igu](![LOGO](/data/art/logo.png))
+![logo_gelisim](https://github.com/amacsizadam4/BPKutuphaneProje/assets/64750696/ce81d7d0-d65a-42da-8e4c-898bd4bdf789)
+
 
 ## İstanbul Gelişim Üniversitesi - Bilgisayar Programcılığı
 
