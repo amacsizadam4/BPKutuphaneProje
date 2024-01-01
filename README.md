@@ -1,6 +1,6 @@
-# KütüphaneProje
+# Basit Kütüphane Sistemi
 
-![igu](https://cdn.gelisim.edu.tr/logo/logo_3.png)
+![igu](https://panel.gelisim.edu.tr/assets/2022/resimler/kim/gelisim-universitesi-logo-3-10_afaf51b3095d48a09a2b135059e06e32.png)
 
 ## İstanbul Gelişim Üniversitesi - Bilgisayar Programcılığı
 
@@ -21,6 +21,22 @@ Temel hedef: Yazılımcılığa giriş, C programlama dili üzerinden kullanıc�
 - Kitap Ödünç Alma
 
                                                                                     etkinliklerini gerçekleştirmek.
+
+---
+
+Proje GCC versiyon 13.2.0 (MSY2 projesinden, Rev2) ile derlenmiştir.
+
+Nasıl Kullanılır? (Doldurulacak, şimdilik boş)
+
+- Uygulamanın düzgün çalışması için data klasörü ve içindekiler gereklidir.
+
+- a.exe ile uygulamayı açınız.
+
+- Eğer uygulamayı ilk kez açıyor iseniz kayıt olmanız gerekmektedir. (Yönetici teyit şifresi 666, değiştirilemez)
+
+- Kitap Ekle, Kitap Sil gibi komutlar sadece yönetici olarak giriş yapıldığında kullanılabilir.
+
+- Kitap Ödünç Al/Bırak komutları sadece kullanıcı olarak giriş yapıldığında kullanılabilir. Her kullanıcının ödünç aldığı kitapları ayrı ayrı kaydedilir.
 
 
 

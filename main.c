@@ -137,7 +137,7 @@ void girisEkrani() {
         printf("Giriş Başarılı!\n");
         //globalUser değişkenini username olarak ata
         strcpy(globalUser, username);
-
+        // GİRİŞ BAŞARILI MI TEST
         printf("DEBUG -- %s, %d\n", globalUser, globalIsAdmin);
         menu();
 
@@ -345,8 +345,6 @@ void kitapEkle()
     printf("═════════════════════════════════════════════\n");
     printf("Seçilen: Kitap Ekle \n");
 
-
-
     printf("Kitap İsmini Giriniz: \n");
     fgets(kitap1, 50, stdin);
 
@@ -359,12 +357,10 @@ void kitapEkle()
     printf("Kitap Sayfa Sayısını Giriniz: \n");
     scanf("%d", &kitap4);
 
-
     clearInputBuffer();
     kitap1[strcspn(kitap1, "\n")] = 0; //bu kodlar alınan kullanıcı stringlerindeki \n satırını siler
     kitap2[strcspn(kitap2, "\n")] = 0;
     kitap3[strcspn(kitap3, "\n")] = 0;
-
 
     printf("Girdiğiniz Kitabın Bilgileri:\n");
     printf("1.İsim: %s\n", kitap1);
@@ -372,7 +368,6 @@ void kitapEkle()
     printf("3.Tür: %s\n", kitap3);
     printf("4.Sayfa Sayısı: %d\n", kitap4);
 
-    
  // bu kısım alınan kullanıcı değerlerini kitaplar.txt dosyasına her girişi yeni satırda kaydeder.
     FILE *file = fopen("data/kitaplar.txt", "a");
 
@@ -551,10 +546,11 @@ void kitapSil(){
 }
 
 void kitapOduncAl(){
+    struct Book book;
     KONSOLTEMIZLE;
     rastgeleCizim();
 
-    char buffer[256];
+    char buffer[1000];
 
     FILE *file = fopen("data/kitaplar.txt", "r");
     if (file == NULL) {
@@ -566,7 +562,7 @@ void kitapOduncAl(){
     printf("Ödünç alacağınız kitabın kodunu giriniz: ");
     scanf("%d", &desiredLine);
     printf("═════════════════════════════════════════════\n");
-    struct Book book;
+    
     int currentLine = 0;
 
     // Dosyayı sıra sıra oku

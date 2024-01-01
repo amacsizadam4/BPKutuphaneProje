@@ -1,2 +1,0 @@
-Othello,William Shakespeare,Roman,331
-Robinson Crusoe,Daniel Defoe,Roman,400
