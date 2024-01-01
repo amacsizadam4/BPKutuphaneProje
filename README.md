@@ -1,6 +1,6 @@
 # Basit Kütüphane Sistemi
 
-![igu](https://panel.gelisim.edu.tr/assets/2022/resimler/kim/gelisim-universitesi-logo-3-10_afaf51b3095d48a09a2b135059e06e32.png)
+![igu](![LOGO](/data/art/logo.png))
 
 ## İstanbul Gelişim Üniversitesi - Bilgisayar Programcılığı
 
