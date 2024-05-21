@@ -12,7 +12,7 @@ char globalUser[50];
 int globalIsAdmin;
 
 // definelar
-#define KONSOLTEMIZLE printf("\e[1;1H\e[2J");
+#define KONSOLTEMIZLE system("cls");
 
 // fonksiyonlar
 int girisMenu();
@@ -24,6 +24,7 @@ void clearInputBuffer();
 int authenticateUser(char *username, char *password, int isAdmin);
 void toLowerCase(char *str);
 void rastgeleCizim();
+void yuklemeEkran();
 
 //kitap fonksiyonları
 void kitapAra();
@@ -51,9 +52,11 @@ struct Book {
 int main() {
     globalIsAdmin = 3; // giriş yapmadan önce önemsiz bir değere atanır
     KONSOLTEMIZLE;
+    yuklemeEkran();
     //hoşgeldiniz (bir kere çalışır)
  
     setlocale(LC_ALL, "tr_TR.UTF-8"); //BU ÇALIŞIYOR!
+    //setlocale(LC_ALL, "Turkish");
     girisMenu();
 
 }
@@ -696,7 +699,7 @@ void tumOduncKitaplar() {
 
 }
 
- void rastgeleCizim() 
+void rastgeleCizim() 
  {
     srand(time(NULL));
     int num = rand() % 5 + 1;
@@ -723,3 +726,15 @@ void tumOduncKitaplar() {
 
         printf("═════════════════════════════════════════════\n");
  }
+
+void yuklemeEkran() {
+    int top;
+    for (top=0; top>=10; top++) {
+        int perc=1;
+        printf("yükleniyor... ");
+        printf("%d",perc);
+        perc++;
+        sleep(1);
+    }
+}
+
